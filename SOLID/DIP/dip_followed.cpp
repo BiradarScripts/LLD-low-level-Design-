@@ -1,50 +1,73 @@
 #include <iostream>
-using namespace std;
+#include <string>
+#include <memory>
 
-// Abstraction (Interface)
-class Database {
+// Abstractions (interfaces via abstract base classes)
+class Logger {
 public:
-    virtual void save(string data) = 0; // Pure virtual function
+    virtual ~Logger() = default;
+    virtual void log(const std::string& msg) = 0;
 };
 
-// MySQL implementation (Low-level module)
-class MySQLDatabase : public Database {
+class PaymentGateway {
 public:
-    void save(string data) override {
-        cout << "Executing SQL Query: INSERT INTO users VALUES('" << data << "');" << endl;
+    virtual ~PaymentGateway() = default;
+    virtual bool pay(int cents) = 0;
+};
+
+// Concrete implementations depend on abstractions (details -> abstractions)
+class ConsoleLogger : public Logger {
+public:
+    void log(const std::string& msg) override { std::cout << "[LOG] " << msg << "\n"; }
+};
+
+class StripeGateway : public PaymentGateway {
+public:
+    bool pay(int cents) override {
+        std::cout << "Stripe: charged " << cents << " cents\n";
+        return true;
     }
 };
 
-// MongoDB implementation (Low-level module)
-class MongoDBDatabase : public Database {
+class PayPalGateway : public PaymentGateway {
 public:
-    void save(string data) override {
-        cout << "Executing MongoDB Function: db.users.insert({name: '" << data << "'})" << endl;
+    bool pay(int cents) override {
+        std::cout << "PayPal: charged " << cents << " cents\n";
+        return true;
     }
 };
 
-// High-level module (Now loosely coupled)
-class UserService {
-private:
-    Database* db;  // Dependency Injection
-
+// High-level module depends only on abstractions; uses DI (constructor injection)
+class BillingService {
+    private:
+    PaymentGateway& gateway;
+    Logger& logger;
 public:
-    UserService(Database* database) {  
-        db = database;
+    BillingService(PaymentGateway& gw, Logger& lg) : gateway(gw), logger(lg) {}
+    void charge(int cents) {
+        logger.log("Charging customer...");
+        if (gateway.pay(cents)) logger.log("Payment succeeded");
     }
-    
-    void storeUser(string user) {
-        db->save(user);
-    }
+
 };
 
 int main() {
-    MySQLDatabase mysql;
-    MongoDBDatabase mongodb;
+    ConsoleLogger logger;
 
-    UserService service1(&mysql);
-    service1.storeUser("Aditya");
+    StripeGateway stripe;
+    BillingService svc1(stripe, logger);
+    svc1.charge(5000);
 
-    UserService service2(&mongodb);
-    service2.storeUser("Rohit");
+    PayPalGateway paypal;              // swap detail without touching BillingService
+    BillingService svc2(paypal, logger);
+    svc2.charge(7000);
 }
+
+
+// When DIP is followed
+// You first define abstractions: Logger and PaymentGateway (just the shape of what you need).
+// BillingService depends only on those abstractions and gets concrete objects injected (passed in) via its constructor.
+// Concrete classes (ConsoleLogger, StripeGateway, PayPalGateway) implement the abstractions.
+// To switch from Stripe to PayPal, you only change what you pass in—BillingService code stays untouched.
+// Testing becomes easy: pass in a fake PaymentGateway/Logger to simulate success/failure.
+// Think: a TV with ports. You can plug in any device that fits the port, no TV surgery needed

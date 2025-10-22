@@ -29,6 +29,10 @@ public:
     }
 };
 
+
+
+
+
 class BasicWheatBurger : public Burger {
 public:
     void prepare() override {
@@ -49,6 +53,9 @@ public:
         cout << "Preparing Premium Wheat Burger with gourmet bun, premium patty, cheese, lettuce, and secret sauce!" << endl;
     }
 };
+
+
+
 
 // Product 2 --> GarlicBread
 class GarlicBread {

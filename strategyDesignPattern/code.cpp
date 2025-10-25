@@ -68,7 +68,7 @@ public:
 };
 
 // --- Robot Base Class ---
-class Robot {
+class Robot { 
 protected:
     WalkableRobot* walkBehavior;
     TalkableRobot* talkBehavior;
@@ -99,7 +99,7 @@ class CompanionRobot : public Robot {
 public:
     CompanionRobot(WalkableRobot* w, TalkableRobot* t, FlyableRobot* f)
         : Robot(w, t, f) {}
-
+ 
     void projection() override {
         cout << "Displaying friendly companion features..." << endl;
     }

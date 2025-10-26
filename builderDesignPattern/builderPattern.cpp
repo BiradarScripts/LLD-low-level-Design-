@@ -52,14 +52,14 @@ private:
 
 public:    
     // Method chaining
-    HttpRequestBuilder& withUrl(const string& u) {
+    HttpRequestBuilder* withUrl(const string& u) {
         req.url = u; 
-        return *this;
+        return this;
     }
 
-    HttpRequestBuilder& withMethod(string method) {
+    HttpRequestBuilder *withMethod(string method) {
         req.method = method;
-        return *this;
+        return this;
     }
     
     HttpRequestBuilder& withHeader(const string& key, const string& value) {
@@ -96,9 +96,7 @@ public:
 int main() {
     // Using Builder Pattern (nested class)
     HttpRequest request = HttpRequestBuilder()
-        .withUrl("https://api.example.com")
-        .withMethod("POST")
-        .withHeader("Content-Type", "application/json")
+        .withUrl("https://api.example.com")->withMethod("POST")->withHeader("Content-Type", "application/json")
         .withHeader("Accept", "application/json")
         .withQueryParams("key", "12345")
         .withBody("{\"name\": \"Aditya\"}")

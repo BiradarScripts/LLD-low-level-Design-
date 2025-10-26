@@ -5,16 +5,8 @@ using namespace std;
 class MoneyHandler {
 protected:
     MoneyHandler *nextHandler;
-
 public:
-    MoneyHandler() {
-        this->nextHandler = nullptr;
-    }
-
-    void setNextHandler(MoneyHandler *next) { 
-        nextHandler = next; 
-    }
-
+    virtual void setNextHandler(MoneyHandler*handle)=0;
     virtual void dispense(int amount) = 0;
 };
 
@@ -25,6 +17,10 @@ private:
 public:
     ThousandHandler(int numNotes) {
         this->numNotes = numNotes;
+    }
+
+    void setNextHandler(MoneyHandler*handle)override{
+        this->nextHandler=handle;
     }
 
     void dispense(int amount) override {
@@ -60,6 +56,9 @@ public:
     FiveHundredHandler(int numNotes) {
         this->numNotes = numNotes;    
     }
+    void setNextHandler(MoneyHandler*handle)override{
+        this->nextHandler=handle;
+    }
 
     void dispense(int amount) override {
         int notesNeeded = amount / 500;
@@ -93,6 +92,9 @@ private:
 public:
     TwoHundredHandler(int numNotes) {
         this->numNotes = numNotes;
+    }
+    void setNextHandler(MoneyHandler*handle)override{
+        this->nextHandler=handle;
     }
 
     void dispense(int amount) override {
@@ -129,6 +131,9 @@ public:
         this->numNotes = numNotes;
     }
 
+    void setNextHandler(MoneyHandler*handle)override{
+            this->nextHandler=handle;
+        }
     void dispense(int amount) override {
         int notesNeeded = amount / 100;
 

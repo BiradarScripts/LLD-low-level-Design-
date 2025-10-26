@@ -40,7 +40,6 @@ class GunPowerUp:public CharacterDecorator{
         return character->getAbilities()+"with GunPowerUp";
     }
 };
-
 class StarPowerUp:public CharacterDecorator{ 
     public:
     StarPowerUp(ICharacter*c):CharacterDecorator(c){}
